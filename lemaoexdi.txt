@@ -114,14 +114,19 @@ Different types of malware and other nasties
 - Trojans		(Disguise as desirable code and executes mallicious code instead)
 - Rootkits 		(Remote control of a machine)
 
+Snort:
 
-Snort
+sudo apt install snort
+snort --version
+sudo vim /etc/snort/snort.conf ipvar HOME_NET <ip addr output on eth0>
 
-sudo apt update && sudo apt dist-upgrade -y
+wget https://www.snort.org/rules/snortrules-snapshot-2983.tar.gz?oinkcode=<your oink code goes here> -O snortrules-snapshot-2983.tar.gz
+sudo tar -xvzf snortrules-snapshot-2983.tar.gc -C /etc/snort/rules
 
-sudo apt install build-essential libpcap-dev libpcre3-dev libnet1-dev zlib1g-dev luajit hwloc libdnet-dev libdumbnet-dev bison flex liblzma-dev openssl libssl-dev pkg-config libhwloc-dev cmake cpputest libsqlite3-dev uuid-dev libcmocka-dev libnetfilter-queue-dev libmnl-dev autotools-dev libluajit-5.1-dev libunwind-dev libfl-dev -y
+sudo ip link set enp0s3 promisc on
 
-https://kifarunix.com/install-and-configure-snort-3-nids-on-ubuntu-20-04/
+sudo snort -d -l /var/log/snort/ -h 192.168.1.0/24 -A console -c /etc/snort/snort.conf
+
 
 
 Lynis:
