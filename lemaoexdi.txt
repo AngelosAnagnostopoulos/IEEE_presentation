@@ -1,8 +1,6 @@
 ﻿Commands cheat-sheet (Presentation material in bold)
 
-Ch.1	UFW/Firewalld
-
-Some stuff on firewalls and DMZs
+Ch.1	UFW
 
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
@@ -20,8 +18,6 @@ Specific Ips:
 sudo ufw allow from <ip>/<mask>
 
 Ch.2	Directory and file security basics
-
-User identity management basics, minimum permission best practices.
 
 Creating users and groups:
 
@@ -71,6 +67,7 @@ Create a demo file to put ACLs on:
 	touch acl_demo.txt
 	chmod 460 acl_demo.txt
 	getfacl acl_demo.txt
+
 To modify ACL policies use 
 	setfacl -m (modify) u:user:rwx <file>
 	setfacl -m (modify) g:group:rwx <file>
@@ -102,17 +99,80 @@ Removing ACLs:
 
 
 
-Ch.3	Introduction to snort and auditing/scanning with Lynis and rkhunter
 
-IDS/IPS systems in general
-Auditing and what its good for
 
-Different types of malware and other nasties
 
-- Ransomware		(Encrypts data until ransom is paid)
-- Keyloggers		(Monitors keystrokes)
-- Trojans		(Disguise as desirable code and executes mallicious code instead)
-- Rootkits 		(Remote control of a machine)
+Ch.3 	The lazy sysadmin’s tools
+
+Creating systemd services:
+
+touch /etc/systemd/system/<name>.service #Write the unitfile
+
+[Unit]
+Description=Example Service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=serviceuser
+ExecStartPre=
+ExecStart=/path/to/executable [options]
+ExecStop=
+ExecReload=
+
+[Install]
+WantedBy=multi-user.target
+sudo systemctl daemon-reload
+sudo systemctl enable <name>
+sudo service <name> start
+
+Executable file content:
+
+#!/bin/sh
+
+echo “Hello from test service!”
+
+Managing tasks with crontab
+
+crontab -e (to modify the cron table for a user)
+https://crontab.guru/ to visualize the format in plain english
+
+Viewing audit logs, making scripts to parse data from log files.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Ch.4	Introduction to snort, and auditing/scanning with Lynis and rkhunter
+
+Lynis:
+
+cd /opt/
+wget https://downloads.cisofy.com/lynis/lynis-2.6.6.tar.gz
+tar xvzf lynis-2.6.6.tar.gz
+mv lynis /usr/local/
+ln -s /usr/local/lynis/lynis /usr/local/bin/lynis
+lynis audit system
+
+RootkitHunter
+
+sudo apt install rkhunter
+rkhunter -c
+
 
 Snort:
 
@@ -120,56 +180,9 @@ sudo apt install snort
 snort --version
 sudo vim /etc/snort/snort.conf ipvar HOME_NET <ip addr output on eth0>
 
-wget https://www.snort.org/rules/snortrules-snapshot-2983.tar.gz?oinkcode=<your oink code goes here> -O snortrules-snapshot-2983.tar.gz
-sudo tar -xvzf snortrules-snapshot-2983.tar.gc -C /etc/snort/rules
+wget https://www.snort.org/downloads/community/community-rules.tar.gz
+sudo tar -xvzf community-rules.tar.gz -C /etc/snort/rules
 
 sudo ip link set enp0s3 promisc on
 
 sudo snort -d -l /var/log/snort/ -h 192.168.1.0/24 -A console -c /etc/snort/snort.conf
-
-
-
-Lynis:
-
-# cd /opt/
-# wget https://downloads.cisofy.com/lynis/lynis-2.6.6.tar.gz
-# tar xvzf lynis-2.6.6.tar.gz
-# mv lynis /usr/local/
-# ln -s /usr/local/lynis/lynis /usr/local/bin/lynis
-# lynis audit system
-
-RootkitHunter
-
-# sudo apt install rkhunter
-# rkhunter -c
-
-Ch.4 The lazy sysadmin’s tools
-
-Creating systemd services
-Managing tasks with crontab
-
-
-
-
-
-
-
-
-
-
-
-
-
-Ch.5	Introduction to SELinux
-
-Install on ubuntu server:
-
-sudo apt-get install policycoreutils selinux-utils selinux-basics -y
-sudo selinux-activate
-sudo selinux-config-enforcing
-sudo reboot
-sestatus
-
-
-
-
